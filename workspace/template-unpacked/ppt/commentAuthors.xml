@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ascii"?>
+<p:cmAuthorLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main">
+  <p:cmAuthor id="0" name="&#24494;&#36719;&#29992;&#25143;" initials="&#24494;&#36719;&#29992;&#25143;" lastIdx="0" clrIdx="0"/>
+  <p:cmAuthor id="7" name="&#38389; &#38686;" initials="&#38389;" lastIdx="1" clrIdx="6"/>
+  <p:cmAuthor id="1" name="&#24352;&#19990;&#21191;" initials="&#24352;" lastIdx="1" clrIdx="0"/>
+  <p:cmAuthor id="8" name="lijinting01" initials="l" lastIdx="1" clrIdx="4"/>
+  <p:cmAuthor id="2" name="&#36213;&#26126;" initials="&#36213;" lastIdx="4" clrIdx="1"/>
+  <p:cmAuthor id="9" name="Administrator" initials="A" lastIdx="1" clrIdx="8"/>
+  <p:cmAuthor id="3" name="&#38472;&#38738;" initials="&#38472;" lastIdx="4" clrIdx="2"/>
+  <p:cmAuthor id="4" name="gongxuan" initials="g" lastIdx="2" clrIdx="3"/>
+  <p:cmAuthor id="11" name="&#31995;&#32479;&#31649;&#29702;&#21592;131" initials="&#31995;" lastIdx="1" clrIdx="10"/>
+  <p:cmAuthor id="5" name="&#37101;&#22521;&#26143;" initials="&#37101;" lastIdx="1" clrIdx="4"/>
+  <p:cmAuthor id="12" name="&#26472;&#24314;&#20161;" initials="&#26472;" lastIdx="1" clrIdx="11"/>
+  <p:cmAuthor id="6" name="&#24352;&#24535;&#36745;" initials="&#24352;" lastIdx="1" clrIdx="5"/>
+</p:cmAuthorLst>
