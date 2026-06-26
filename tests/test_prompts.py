@@ -1,9 +1,9 @@
 import pytest
-from app.models import (
+from big_data_model.models import (
     IncidentRequest, AdapterResult, BaselineScanResult,
     InvestigationResult, Finding,
 )
-from app.agent.prompts import (
+from big_data_model.agent.prompts import (
     format_adapter_data, format_phase1_summary,
     build_phase2_prompt, build_phase3_prompt,
 )

@@ -2,7 +2,7 @@ import asyncio
 import logging
 import sys
 
-from app.pull_agent.agent import handle_message
+from big_data_model.pull_agent.agent import handle_message
 
 logging.basicConfig(
     level=logging.INFO,

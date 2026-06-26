@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 
 
 def test_health_endpoint():
-    from app.main import app
+    from big_data_model.main import app
     client = TestClient(app)
     response = client.get("/health")
     assert response.status_code == 200
@@ -16,8 +16,8 @@ def test_health_endpoint():
 
 def test_incidents_endpoint_returns_report():
     """Test the endpoint structure — mocks LLM to avoid real calls."""
-    from app.main import app, orchestrator
-    from app.models import InspectionReport
+    from big_data_model.main import app, orchestrator
+    from big_data_model.models import InspectionReport
 
     mock_report = InspectionReport(
         incident_id="test123",

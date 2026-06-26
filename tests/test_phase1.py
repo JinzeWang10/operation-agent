@@ -1,8 +1,8 @@
 import pytest
 import asyncio
-from app.adapters.base import BaseAdapter, AdapterRegistry
-from app.agent.phase1 import BaselineScanner
-from app.adapters.mock_adapters import create_default_registry
+from big_data_model.adapters.base import BaseAdapter, AdapterRegistry
+from big_data_model.agent.phase1 import BaselineScanner
+from big_data_model.adapters.mock_adapters import create_default_registry
 
 
 class SlowAdapter(BaseAdapter):

@@ -1,4 +1,4 @@
-from app.pull_agent.prompt import build_prompt
+from big_data_model.pull_agent.prompt import build_prompt
 
 
 def test_build_prompt_contains_all_sections():

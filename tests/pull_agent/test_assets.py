@@ -1,4 +1,4 @@
-from app.pull_agent.assets import load_assets, MANAGER_TYPES
+from big_data_model.pull_agent.assets import load_assets, MANAGER_TYPES
 
 
 def test_load_assets_returns_nonempty_list():

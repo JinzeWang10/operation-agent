@@ -1,0 +1,14 @@
+{# BPC 图块 — vm = BpcVM。仅在 vm.present 时由 dashboard.html.j2 引入 #}
+<section class="panel">
+  <div class="panel-title">{{ vm.header }}</div>
+  {% if vm.legend %}
+  <div class="bpc-legend">
+    {% for item in vm.legend %}
+    <span class="bpc-legend-item">
+      <span class="bpc-legend-swatch" style="background: {{ item.color }};"></span>{{ item.name }}
+    </span>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="bpc-svg-wrap">{{ vm.svg|safe }}</div>
+</section>

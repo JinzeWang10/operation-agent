@@ -2,3 +2,6 @@
 __pycache__/
 *.egg-info/
 .pytest_cache/
+big_data_model/incident/output/
+big_data_model.zip
+.gstack/

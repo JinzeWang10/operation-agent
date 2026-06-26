@@ -1,6 +1,6 @@
 import pytest
 
-from app.pull_agent.parser import parse_llm_output, ParseError
+from big_data_model.pull_agent.parser import parse_llm_output, ParseError
 
 ASSETS = ["Linux操作系统", "GaussDB"]
 

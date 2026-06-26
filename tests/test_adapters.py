@@ -1,6 +1,6 @@
 import pytest
-from app.adapters.base import AdapterRegistry
-from app.adapters.mock_adapters import (
+from big_data_model.adapters.base import AdapterRegistry
+from big_data_model.adapters.mock_adapters import (
     BPCAdapter, DatabaseAdapter, create_default_registry,
 )
 

@@ -1,11 +1,11 @@
 import pytest
 import json
 from unittest.mock import AsyncMock, MagicMock
-from app.agent.phase2 import DeepInvestigator
-from app.agent.tools import build_tool_definitions, execute_tool
-from app.adapters.mock_adapters import create_default_registry
-from app.config import Settings
-from app.llm.client import LLMClient
+from big_data_model.agent.phase2 import DeepInvestigator
+from big_data_model.agent.tools import build_tool_definitions, execute_tool
+from big_data_model.adapters.mock_adapters import create_default_registry
+from big_data_model.config import Settings
+from big_data_model.llm.client import LLMClient
 
 
 @pytest.fixture

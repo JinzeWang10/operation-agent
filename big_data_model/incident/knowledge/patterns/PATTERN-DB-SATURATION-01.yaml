@@ -1,0 +1,25 @@
+id: PATTERN-DB-SATURATION-01
+名称: 数据库资源饱和导致交易响应异常
+版本: 1
+状态: 启用
+适用条件: 依赖关系型数据库(Oracle/GaussDB)的联机交易类系统
+症状标签: [slow, response_drop]
+现象: >-
+  BPC 响应率/成功率持续下降(非单点脉冲),交易耗时上升;
+  应用日志出现 timeout、connection 类报错
+候选根因:
+  - 数据库活动连接数异常堆积,连接池耗尽
+  - 慢查询/长事务拖垮实例(常由发布引入的新 SQL 触发)
+验证:
+  - probe: db_instance_status
+    判定: 受影响系统所依赖实例的 active_conn 明显高于日常水平,或 CPU/IOwait 越限
+    区分: [PATTERN-RELEASE-REGRESSION-01]
+  - probe: log_keyword_hits
+    判定: 出现 timeout / connection 类关键字,且指向数据库连接
+    区分: []
+  - probe: release_rules_recent
+    判定: 12 小时内有规则发布 → 优先怀疑"发布引入新 SQL"这条子根因
+    区分: []
+排除: 所依赖数据库实例探测全部正常、active_conn 与资源指标均无异常时,本模式不成立
+来源案例: [INC-2025-0817]
+备注: 判定中"日常水平"暂凭值班经验;基线缓存建成后改为 p90 口径

@@ -1,0 +1,40 @@
+{# 现象简报面板 — vm = BriefVM #}
+<section class="brief">
+  <div class="brief-title">现象简报</div>
+  <div class="brief-body">
+    {% for sec in vm.sections %}
+    <div class="brief-section {% if sec.kind == 'error' %}brief-error{% endif %}">
+      {% if sec.title %}<h3 class="brief-subtitle">{{ sec.title }}</h3>{% endif %}
+      {% for line in sec.lines %}
+      <p>{% for seg in line.segments -%}
+        {%- if seg.kind == "plain" -%}{{ seg.text }}{%- else -%}<span class="hl-{{ seg.kind }}">{{ seg.text }}</span>{%- endif -%}
+      {%- endfor %}</p>
+      {% endfor %}
+    </div>
+    {% endfor %}
+    {% if vm.log.present %}
+    <div class="brief-section brief-log">
+      <h3 class="brief-subtitle">{{ vm.log.title }}</h3>
+      {% if vm.log.entries %}
+        {% for e in vm.log.entries %}
+        <div class="log-entry">
+          <div class="log-src">{{ e.src }}</div>
+          {% for h in e.hits %}
+          <div class="log-hit">
+            <span class="log-kw">{{ h.keyword }}</span>
+            <span class="log-meta">{{ h.count }} 次 · {{ h.ip_count }} IP</span>
+          </div>
+          {% endfor %}
+          {% if e.raw_msg %}<p class="log-rawmsg">{{ e.raw_msg }}</p>{% endif %}
+        </div>
+        {% endfor %}
+        {% if vm.log.interpretation %}
+        <p class="log-interp"><span class="log-interp-label">研判</span>{{ vm.log.interpretation }}</p>
+        {% endif %}
+      {% else %}
+        <p class="log-normal">{{ vm.log.normal_note }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>

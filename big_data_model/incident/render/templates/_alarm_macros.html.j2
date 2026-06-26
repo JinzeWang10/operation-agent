@@ -1,0 +1,16 @@
+{# 共用告警卡片宏 — 接收 list[AlarmCardVM]，输出一组卡片。
+   主机告警与数据库告警都使用此宏，保证视觉一致。 #}
+{% macro alarm_cards(cards) %}
+<div class="alarm-cards">
+  {% for c in cards %}
+  <div class="alarm-card {% if c.is_active %}active{% else %}resolved{% endif %}">
+    <div class="alarm-head">
+      <span class="alarm-ip">{{ c.host }}</span>
+      <span class="alarm-name">{{ c.alert_name }}</span>
+      <span class="alarm-state state-{% if c.is_active %}active{% else %}resolved{% endif %}">{{ c.state }}</span>
+    </div>
+    <div class="alarm-desc">{{ c.desc }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endmacro %}

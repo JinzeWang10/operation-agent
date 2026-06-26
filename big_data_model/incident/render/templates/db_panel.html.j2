@@ -1,0 +1,56 @@
+{# 数据库面板 — vm = DbPanelVM。仅在 vm.present（即存在 active 告警）时渲染 #}
+{% import "_alarm_macros.html.j2" as macros %}
+<section class="panel db-panel">
+  <div class="panel-title">数据库告警概览</div>
+
+  {% if vm.cards %}
+  <div class="panel-section-head">告警 ({{ vm.cards|length + vm.cards_truncated }})</div>
+  {{ macros.alarm_cards(vm.cards) }}
+  {% if vm.cards_truncated %}
+  <div class="alarm-cards-more">+ 还有 {{ vm.cards_truncated }} 条告警未展示</div>
+  {% endif %}
+  {% endif %}
+
+  {% if vm.instances %}
+  <div class="panel-section-head">
+    实例概览 ({{ vm.instance_count }}{% if vm.abnormal_count %} · 探测异常 {{ vm.abnormal_count }}{% endif %} · 正常 {{ vm.normal_count }}{% if vm.breach_total %} · 超阈值/告警 {{ vm.breach_total }} 台置顶，其余按 CPU+IOwait 排序{% endif %} · Top {{ vm.instances|length }})
+  </div>
+  <table class="db-instances">
+    <colgroup>
+      <col class="col-ip"><col class="col-type"><col class="col-status">
+      <col class="col-cpu"><col class="col-mem"><col class="col-iow"><col class="col-disk">
+      <col class="col-conn"><col class="col-ybp"><col class="col-days">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>主机 IP</th><th>类型</th><th>状态</th>
+        <th>CPU</th><th>内存</th><th>IOwait</th><th>磁盘</th>
+        <th>活跃连接</th><th>ybp</th><th>运行天数</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in vm.instances %}
+      <tr class="{% if r.is_alarming %}alarming{% elif not r.is_normal %}abnormal{% endif %}">
+        <td class="ip">{{ r.host }}</td>
+        <td><span class="db-type db-type-{{ r.db_type }}">{{ r.db_type }}</span></td>
+        <td><span class="db-status {% if r.is_normal %}normal{% else %}abnormal{% endif %}">●</span> {{ r.status_text }}</td>
+        <td class="{% if r.cpu.breach %}breach{% endif %}">{{ r.cpu.text }}</td>
+        <td class="{% if r.mem.breach %}breach{% endif %}">{{ r.mem.text }}</td>
+        <td class="{% if r.iow.breach %}breach{% endif %}">{{ r.iow.text }}</td>
+        <td class="{% if r.disk.breach %}breach{% endif %}">{{ r.disk.text }}</td>
+        <td>{{ r.active_conn }}</td>
+        <td class="ybp">{{ r.ybp or "—" }}</td>
+        <td>{{ r.days }}</td>
+      </tr>
+      {% endfor %}
+      {% if vm.truncated_count %}
+      <tr class="more">
+        <td colspan="10">
+          + 还有 {{ vm.truncated_count }} 个实例未展示（共 {{ vm.instance_count }} 个、{{ vm.breach_total }} 个异常）
+        </td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>

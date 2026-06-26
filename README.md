@@ -42,7 +42,7 @@ POST /api/v1/incidents { system_code, influence_area }
 ## 项目结构
 
 ```
-app/
+big_data_model/
 ├── main.py                # FastAPI 入口 + 组件初始化
 ├── config.py              # Pydantic Settings（环境变量配置）
 ├── models.py              # 所有数据模型
@@ -107,7 +107,7 @@ AGENT_DEBUG=true
 ### 启动服务
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn big_data_model.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### 使用

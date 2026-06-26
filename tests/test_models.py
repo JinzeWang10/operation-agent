@@ -1,5 +1,5 @@
 import pytest
-from app.models import (
+from big_data_model.models import (
     IncidentRequest, AdapterResult, BaselineScanResult,
     Finding, InvestigationResult, InspectionReport,
 )

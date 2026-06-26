@@ -1,5 +1,5 @@
 import pytest
-from app.config import Settings
+from big_data_model.config import Settings
 
 
 @pytest.fixture

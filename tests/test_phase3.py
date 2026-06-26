@@ -1,12 +1,12 @@
 import pytest
 from unittest.mock import AsyncMock
-from app.agent.phase3 import ReportGenerator
-from app.models import (
+from big_data_model.agent.phase3 import ReportGenerator
+from big_data_model.models import (
     IncidentRequest, AdapterResult, BaselineScanResult,
     InvestigationResult, Finding,
 )
-from app.config import Settings
-from app.llm.client import LLMClient
+from big_data_model.config import Settings
+from big_data_model.llm.client import LLMClient
 
 
 @pytest.fixture

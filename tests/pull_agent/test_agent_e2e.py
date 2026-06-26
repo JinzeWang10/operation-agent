@@ -1,6 +1,6 @@
 import pytest
 
-from app.pull_agent.agent import handle_message
+from big_data_model.pull_agent.agent import handle_message
 
 
 pytestmark = pytest.mark.e2e

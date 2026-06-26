@@ -1,0 +1,32 @@
+{# 关联上下文 — vm = RelatedVM #}
+<aside class="related">
+  {% if vm.incidents %}
+  <div class="related-block">
+    <h3>{{ vm.incidents_header or "关联事件单" }}</h3>
+    {% for i in vm.incidents %}
+    <div class="related-item">
+      <div class="related-item-head">
+        <span class="tag {{ i.severity_kind }}">[{{ i.severity }}]</span>
+        <span class="ticket-id">{{ i.ticket_id }}</span>
+      </div>
+      <div class="related-body">{{ i.body }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% if vm.changes %}
+  <div class="related-block">
+    <h3>{{ vm.changes_header or "关联变更/升级" }}</h3>
+    {% for c in vm.changes %}
+    <div class="related-item">
+      <div class="related-item-head">
+        <span class="tag {{ c.type_kind }}">[{{ c.type_text }}]</span>
+        <span class="ticket-id">{{ c.ticket_id }}</span>
+      </div>
+      <div class="related-body">{{ c.body }}</div>
+      <div class="related-time">时间窗 {{ c.time_range }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</aside>

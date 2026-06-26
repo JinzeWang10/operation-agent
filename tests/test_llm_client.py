@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from app.llm.client import LLMClient
-from app.config import Settings
+from big_data_model.llm.client import LLMClient
+from big_data_model.config import Settings
 
 
 @pytest.fixture

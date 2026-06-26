@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>{{ vm.title }}</title>
+  <style>{{ css|safe }}</style>
+</head>
+<body>
+  <main class="dashboard">
+    <div class="dashboard-title">{{ vm.title }}</div>
+
+    {% if vm.banner.present %}
+      {% with vm=vm.banner %}{% include "banner.html.j2" %}{% endwith %}
+    {% endif %}
+
+    {# 上半：brief + related。任一存在则渲染；只剩一个时单列 #}
+    {% if vm.brief.present or vm.related.present %}
+    <div class="top {% if not (vm.brief.present and vm.related.present) %}solo{% endif %}">
+      {% if vm.brief.present %}
+        {% with vm=vm.brief %}{% include "brief.html.j2" %}{% endwith %}
+      {% endif %}
+      {% if vm.related.present %}
+        {% with vm=vm.related %}{% include "related.html.j2" %}{% endwith %}
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if vm.bpc.present %}
+      {% with vm=vm.bpc %}{% include "bpc.html.j2" %}{% endwith %}
+    {% endif %}
+
+    {% if vm.db_panel.present %}
+      {% with vm=vm.db_panel %}{% include "db_panel.html.j2" %}{% endwith %}
+    {% endif %}
+
+    {% if vm.hosts.present %}
+      {% with vm=vm.hosts %}{% include "hosts.html.j2" %}{% endwith %}
+    {% endif %}
+  </main>
+</body>
+</html>

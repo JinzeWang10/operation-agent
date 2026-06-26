@@ -12,6 +12,7 @@ dependencies = [
     "httpx>=0.27.0",
     "python-dotenv>=1.0",
     "structlog>=24.0",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
@@ -22,7 +23,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["app*"]
+include = ["big_data_model*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

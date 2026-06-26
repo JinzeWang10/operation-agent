@@ -1,14 +1,14 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from app.agent.orchestrator import Orchestrator
-from app.agent.phase1 import BaselineScanner
-from app.agent.phase2 import DeepInvestigator
-from app.agent.phase3 import ReportGenerator
-from app.models import (
+from big_data_model.agent.orchestrator import Orchestrator
+from big_data_model.agent.phase1 import BaselineScanner
+from big_data_model.agent.phase2 import DeepInvestigator
+from big_data_model.agent.phase3 import ReportGenerator
+from big_data_model.models import (
     IncidentRequest, AdapterResult, BaselineScanResult,
     InvestigationResult, Finding,
 )
-from app.config import Settings
+from big_data_model.config import Settings
 
 
 @pytest.fixture

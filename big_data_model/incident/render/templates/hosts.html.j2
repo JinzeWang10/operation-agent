@@ -1,0 +1,48 @@
+{# 主机表 — vm = HostTableVM。结构与数据库面板对齐：告警卡片 + 主机概览表 #}
+{% import "_alarm_macros.html.j2" as macros %}
+<section class="panel hosts">
+  <div class="panel-title">主机告警概览</div>
+
+  {% if vm.cards %}
+  <div class="panel-section-head">告警 ({{ vm.cards|length + vm.cards_truncated }})</div>
+  {{ macros.alarm_cards(vm.cards) }}
+  {% if vm.cards_truncated %}
+  <div class="alarm-cards-more">+ 还有 {{ vm.cards_truncated }} 条告警未展示</div>
+  {% endif %}
+  {% endif %}
+
+  <div class="panel-section-head">
+    主机概览 ({{ vm.total_count }} 台 · 超阈值/告警 {{ vm.breach_total }} 台置顶，其余按 CPU+IOwait 排序 · Top {{ vm.rows|length }})
+  </div>
+  <table>
+    <colgroup>
+      <col class="col-ip"><col class="col-cpu"><col class="col-mem">
+      <col class="col-iow"><col class="col-disk"><col class="col-days">
+    </colgroup>
+    <thead>
+      <tr>
+        <th>主机 IP</th><th>CPU</th><th>内存</th><th>IOwait</th>
+        <th>磁盘</th><th>运行天数</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in vm.rows %}
+      <tr class="{% if r.is_alarming %}alarming{% endif %}">
+        <td class="ip">{{ r.ip }}</td>
+        <td class="{% if r.cpu.breach %}breach{% endif %}">{{ r.cpu.text }}</td>
+        <td class="{% if r.mem.breach %}breach{% endif %}">{{ r.mem.text }}</td>
+        <td class="{% if r.iow.breach %}breach{% endif %}">{{ r.iow.text }}</td>
+        <td class="{% if r.disk.breach %}breach{% endif %}">{{ r.disk.text }}</td>
+        <td>{{ r.days }}</td>
+      </tr>
+      {% endfor %}
+      {% if vm.truncated_count %}
+      <tr class="more">
+        <td colspan="6">
+          + 还有 {{ vm.truncated_count }} 台主机未展示（共 {{ vm.total_count }} 台、{{ vm.breach_total }} 台异常）
+        </td>
+      </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</section>
