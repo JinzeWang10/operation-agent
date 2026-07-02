@@ -147,23 +147,26 @@ def _bag_with_hosts(hosts, alarms=()):
 
 
 def test_hosts_truncate_excess_with_count():
-    # 50 台全部超 iowait 阈值
+    # 50 台全部超 iowait 阈值，表格上限 20 行（_TABLE_MAX_ROWS）
     hosts = [_make_host(f"10.0.0.{i}", iow=50.0) for i in range(1, 51)]
     bag = _bag_with_hosts(hosts)
     vm = build_view_model(bag, brief_text=None, related=None, bpc_svg=None)
-    assert len(vm.hosts.rows) == 12
-    assert vm.hosts.truncated_count == 38
+    assert len(vm.hosts.rows) == 20
+    assert vm.hosts.truncated_count == 30
     assert vm.hosts.total_count == 50
     assert vm.hosts.breach_total == 50
 
 
-def test_hosts_no_breach_no_rows():
+def test_hosts_no_breach_still_all_shown():
+    """无越限也全量展示（告警 → 越限 → 其余 三层排序的第三层）。"""
     hosts = [_make_host(f"10.0.0.{i}", cpu=5.0, mem=10.0) for i in range(1, 6)]
     bag = _bag_with_hosts(hosts)
     vm = build_view_model(bag, brief_text=None, related=None, bpc_svg=None)
-    assert vm.hosts.rows == []
+    assert len(vm.hosts.rows) == 5
     assert vm.hosts.truncated_count == 0
     assert vm.hosts.total_count == 5
+    assert vm.hosts.breach_total == 0
+    assert all(not r.is_alarming for r in vm.hosts.rows)
 
 
 def test_hosts_breach_cell_flag():
@@ -192,8 +195,9 @@ def test_hosts_ipv6_preserved():
     assert vm.hosts.rows[0].ip == "fe80::1234:abcd:5678:90ef"
 
 
-def test_hosts_long_alarm_text_kept_full():
-    """alarm_text 不再硬截断到 22 字，由 CSS ellipsis 处理。"""
+def test_hosts_long_alarm_becomes_card_full_text():
+    """告警不再挂在行内 alarm_text，改为表格上方的告警卡片；
+    卡片文本不做字符硬截断（溢出由 CSS 处理），行上保留 is_alarming 标记。"""
     long_alarm = "这是一个非常非常长的告警名称，长到旧版本会被字符截断到 22 字" * 2
     hosts = [_make_host("10.0.0.1", cpu=95.0)]
     alarms = [
@@ -205,8 +209,10 @@ def test_hosts_long_alarm_text_kept_full():
     bag = _bag_with_hosts(hosts, alarms=alarms)
     bag.hosts.breaches["cpu_high"] = ["10.0.0.1"]
     vm = build_view_model(bag, brief_text=None, related=None, bpc_svg=None)
-    assert vm.hosts.rows[0].alarm_text == long_alarm
+    assert vm.hosts.cards[0].alert_name == long_alarm
+    assert vm.hosts.cards[0].is_active is True
     assert vm.hosts.rows[0].is_alarming is True
+    assert vm.hosts.alarm_count == 1
 
 
 # ---- Banner 不截断 ----------------------------------------------------

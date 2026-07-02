@@ -40,7 +40,9 @@ def test_html_contains_title_and_core_sections(real_bag, real_related):
                       related=real_related, incident_id="INC-X")
     assert "事件会诊速览" in html
     assert "INC-X" in html
-    assert 'class="banner"' in html
+    # sample 的规则发布均早于近期窗口（is_recent=False），banner 有意不渲染；
+    # banner 渲染路径由 test_html_banner_html_in_rule_escaped 覆盖。
+    assert 'class="banner"' not in html
     assert 'class="brief"' in html
     assert "panel hosts" in html
     assert 'class="related"' in html

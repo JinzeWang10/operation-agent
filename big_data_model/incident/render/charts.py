@@ -9,6 +9,8 @@ from io import StringIO
 from math import nan
 from typing import Callable, Optional
 
+import matplotlib
+matplotlib.use("Agg")  # 服务端出 SVG，禁用 GUI 后端（无 Tcl/Tk 环境也能跑）
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 
