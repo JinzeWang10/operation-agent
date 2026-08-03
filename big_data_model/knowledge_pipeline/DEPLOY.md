@@ -83,6 +83,25 @@ python -m big_data_model.knowledge_pipeline.run stage2 --min-size 3
    LLM 复核结论，`is_invalid_flag` 是原始标记，两者都保留。
 4. **低置信案例**：`原始._kp_meta.低置信=true` 的（快照缺失/文本矛盾）建议人工优先复核。
 
+## 三点五、归一化与人工复核标记（2026-08 新增）
+
+为让「命中匹配 / 同系统召回」能对齐，新增确定性归一化层
+`incident/knowledge/normalize.py`（系统名规范化 + 定位对象 facet 分解 + 命中口径
+「系统+实例token，可降级」）。**消费端自动生效，`cases.jsonl` 无需改、不做迁移。**
+
+内网跑前/跑后注意：
+
+1. **替换系统名词表**：`incident/knowledge/vocab/systems.txt` 当前是从历史 `fault_system`
+   自举的**种子**（约 95 条）。内网请用 `t_business_standard.system_name` 的快照
+   **整体替换**（一行一个，`#` 开头为注释）。替换后系统识别覆盖更高。
+2. **外部依赖词表**：`vocab/external_deps.txt`（行业平台/税局通道等，不在 t_business_standard），
+   种子约 11 条，**需人工审核增删**。
+3. **系统名标记**：归不进词表的系统名 `resolve_system().resolved=False`（当前种子词表下
+   约 14%），这类留待后续人工复核，不阻塞。
+4. **prompt 已加强（本次重跑生效）**：Stage 1 要求「回填.描述」必填且与「现场摘要」区分、
+   禁止有根因文本时返回 UNKNOWN 空壳；Stage 2 聚类已排除 UNKNOWN 桶。
+   → 建议重跑时定向补 UNKNOWN 漏判行 + 断连失败行（断点续跑自动跳过已成功行）。
+
 ## 四、验证记录（2026-07-02，公网 qwen3.7-plus 替代端点）
 
 - Stage 1：50/50 行成功（含 4 行 xlsx 截断行降级处理）。

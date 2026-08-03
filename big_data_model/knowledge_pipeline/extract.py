@@ -53,6 +53,7 @@ def _build_case(row: ParsedRow, parsed_llm: dict) -> Case:
     meta = {
         "有效性": validity or ("invalid" if row.is_invalid else "valid"),
         "is_invalid_flag": row.is_invalid,
+        "影响范围": row.affected_business,  # 与"故障系统"分开的维度(原并入 system 造脏键)
         "症状标签": row.symptom_tags,
         "低置信": bool(parsed_llm.get("低置信", False)) or bool(row.parse_error),
         "备注": str(parsed_llm.get("备注", "") or ""),

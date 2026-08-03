@@ -83,6 +83,7 @@ class ParsedRow:
     solution_text: str   # tna + tasi 两处 solution_record + solution_details 合并
     brief: dict          # features.to_llm_brief(),解析失败为 {}
     symptom_tags: list[str]
+    affected_business: str = ""  # 影响范围,与"故障系统"是两个维度,不并入 system
     parse_error: Optional[str] = None
     raw: dict = field(default_factory=dict)
 
@@ -92,7 +93,12 @@ class ParsedRow:
 
 def parse_row(row: dict) -> ParsedRow:
     order_number = str(row.get("order_number") or "").strip()
-    system = _first_str(row, "fault_system", "affected_business") or "(未知系统)"
+    # 故障系统 = 匹配/召回的 join key,只取 fault_system;fault_system 缺失才退到
+    # affected_business。**不再把两者换行合并**——影响范围是另一个维度,单独留存,
+    # 否则会造出 "A\nB" 这类拼接键,击穿 recent_by_system 的精确匹配。
+    fault_system = _first_str(row, "fault_system")
+    affected_business = _first_str(row, "affected_business")
+    system = fault_system or affected_business or "(未知系统)"
     occurred = str(row.get("happen_time") or row.get("order_create_time") or "").strip()
     closed = str(row.get("order_end_time") or row.get("recovery_time") or "").strip()
 
@@ -121,6 +127,7 @@ def parse_row(row: dict) -> ParsedRow:
         ),
         brief=brief,
         symptom_tags=symptom_tags,
+        affected_business=affected_business,
         parse_error=err,
         raw=row,
     )

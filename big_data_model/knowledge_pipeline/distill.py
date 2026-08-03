@@ -34,10 +34,14 @@ def _case_meta(case: Case) -> dict:
 def cluster_cases(
     cases: list[Case], *, min_size: int = 3
 ) -> list[tuple[str, str, list[Case]]]:
-    """按根因类别聚类。返回 [(类别, 代表定位对象, cases)],仅保留 >= min_size 的簇。"""
+    """按根因类别聚类。返回 [(类别, 代表定位对象, cases)],仅保留 >= min_size 的簇。
+
+    UNKNOWN 不参与蒸馏:它是"未能归类/无根因信息"的兜底桶,聚在一起提炼不出可用模式,
+    只会产出垃圾 pattern,故直接排除。
+    """
     groups: dict[str, list[Case]] = defaultdict(list)
     for c in cases:
-        if c.回填 is None:
+        if c.回填 is None or (c.回填.类别 or "").strip().upper() == "UNKNOWN":
             continue
         groups[c.回填.类别].append(c)
 

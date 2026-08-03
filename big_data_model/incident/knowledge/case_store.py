@@ -20,6 +20,8 @@ from typing import Literal, Optional
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from big_data_model.incident.knowledge import normalize
+
 
 class RootCause(BaseModel):
     """一个根因表达:类别 × 定位对象,可附一句话描述。"""
@@ -84,11 +86,15 @@ def load_case_yaml(path: Path) -> Case:
 
 
 def hit_rank(case: Case) -> Optional[int]:
-    """命中名次:回填根因与 Top N 中第几条一致(1 起);未回填或未命中返回 None。"""
+    """命中名次:回填根因与 Top N 中第几条一致(1 起);未回填或未命中返回 None。
+
+    命中口径走 ``normalize.same_root_cause``(系统+实例token,可降级,兜底不弱于
+    旧精确匹配),让"UnderwritePowerRule_32App"的多种写法能对齐,评估命中率才可信。
+    """
     if case.回填 is None:
         return None
     for rank, hypo in enumerate(case.Top3, start=1):
-        if hypo.same_target(case.回填):
+        if normalize.same_root_cause(hypo, case.回填):
             return rank
     return None
 
@@ -137,9 +143,10 @@ class CaseStore:
         """
         now = now or datetime.now()
         cutoff = now - timedelta(days=days)
+        target = normalize.canonical_system(system)  # 两侧都规范化,消除 fault_system 拼接脏键
         out: list[Case] = []
         for case in self.all():
-            if case.系统 != system:
+            if normalize.canonical_system(case.系统) != target:
                 continue
             try:
                 occurred = datetime.fromisoformat(case.发生时间)
