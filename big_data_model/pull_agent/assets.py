@@ -1,42 +1,33 @@
-ASSETS = [
-    "智家服务管理系统",
-    "智能合规双录平台",
-    "智能化打印PageOn系统",
-    "智能客服系统",
-    "智能培训效果评估系统",
-    "智能识别",
-    "智能医疗审核系统",
-    "智能营销",
-    "智能中心",
-    "AIX操作系统",
-    "Linux操作系统",
-    "Windows操作系统",
-    "SinoDB",
-    "OracleDB",
-    "GaussDB",
-    "PG数据库系统",
-    "SVC存储虚拟化",
-    "LinuxONE软件",
-    "Gbase数据库系统",
-    "OceanBase-PAAS",
-    "第三代车险承保系统",
-    "第三代非车承保系统",
-    "车险核保系统",
-    "第三代非车核保系统",
-    "车险移动核保系统",
-    "非车数字化核保",
-    "非车出单过程管理",
-    "非车数字化出单系统",
-    "非车险风险定价系统",
-    "非车险理赔智集平台",
-    "非车小额理赔小程序",
-    "互联网非车",
-    "新非车险理赔系统",
-    "商业非车风控服务平台"
-]
+from database import postgre
 
 MANAGER_TYPES = ["运维经理", "开发经理"]
 
 
-def load_assets() -> list[str]:
-    return list(ASSETS)
+def load_assets(step_num) -> list[str]:
+    if step_num == 2:
+        sql_str = r"select application_name from t_business_standard where application_id like '%\_%'"
+        postgre.initdatabase()
+        data_rows = postgre.select_sql(sql_str)
+        postgre.closedatabase()
+        system_list = []
+        for data_line in data_rows:
+            system_list.append(data_line[0])
+        print(len(list(set(system_list))))
+        sql_str = r"select system_name from t_business_standard where application_id not like '%\_%'"
+        postgre.initdatabase()
+        base_rows = postgre.select_sql(sql_str)
+        postgre.closedatabase()
+        print(len(base_rows))
+        for base_line in base_rows:
+            system_list.append(base_line[0])
+        print(len(list(set(system_list))))
+        return list(set(system_list))
+    else:
+        sql_str = "select system_name from t_business_standard where projectclassifi in ('01','02')"
+        postgre.initdatabase()
+        data_rows = postgre.select_sql(sql_str)
+        postgre.closedatabase()
+        system_list = []
+        for data_line in data_rows:
+            system_list.append(data_line[0])
+        return list(set(system_list))
