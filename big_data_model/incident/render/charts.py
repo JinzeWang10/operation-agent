@@ -1,7 +1,9 @@
 """BPC 4 联图：matplotlib 渲染为 SVG 字符串，供 Jinja 模板内联。
 
-策略：复用旧 charts.py 的曲线绘制逻辑（峰值高亮、阈值高亮、多系统叠加），
+策略：复用旧 charts.py 的曲线绘制逻辑（多系统叠加），
 只把"输出 PNG"换成"输出 SVG 字符串"。SVG 在 HTML 里随浏览器布局自动缩放。
+极值信息（峰值/最低点及时间）由各子图副标题承载，不在图上另行标注，
+避免标注文字在小尺寸联图里遮挡曲线。
 """
 from __future__ import annotations
 
@@ -57,11 +59,7 @@ def _hm(ts: str) -> str:
 
 def _draw_metric(
     ax, systems: list[BpcSystemFeatures], metric: str,
-    single_color: str, title: str, subtitle: str, unit: str = "",
-    highlight: Optional[str] = None,
-    worst_picker: Optional[Callable[[BpcSystemFeatures], float]] = None,
-    gate: Optional[Callable[[BpcSystemFeatures], bool]] = None,
-    annot_fmt: str = "{v:.0f}",
+    single_color: str, title: str, subtitle: str,
     ylim: Optional[tuple] = None,
 ) -> None:
     multi = len(systems) > 1
@@ -86,30 +84,6 @@ def _draw_metric(
             real_y = [v for v in y if v == v]  # drop NaN
             if real_y:
                 ax.fill_between(x, y, min(real_y), color=color, alpha=0.12)
-
-    if highlight and worst_picker:
-        target = max(systems, key=worst_picker)
-        if gate is None or gate(target):
-            valid_pts = [
-                p for p in target.timepoints if getattr(p, metric) is not None
-            ]
-            if valid_pts:
-                x = [ts_to_x[p.timestamp] for p in valid_pts]
-                y = [getattr(p, metric) for p in valid_pts]
-                if highlight == "max":
-                    i = max(range(len(y)), key=lambda k: y[k])
-                    hcolor, dy = RED, 8
-                else:
-                    i = min(range(len(y)), key=lambda k: y[k])
-                    hcolor, dy = ORANGE, -12
-                ax.scatter([x[i]], [y[i]], color=hcolor, s=90, zorder=5,
-                           edgecolor=BG, linewidth=1.2)
-                tag = annot_fmt.format(v=y[i]) + unit
-                if multi:
-                    tag += f"  {target.system_name}"
-                ax.annotate(tag, (x[i], y[i]),
-                            textcoords="offset points", xytext=(6, dy),
-                            color=hcolor, fontsize=9, fontweight="bold")
 
     ax.set_xticks(list(range(len(all_ts))))
     ax.set_xticklabels(labels, rotation=0, fontsize=7)
@@ -167,7 +141,7 @@ def render_bpc_svg(bag: FeatureBag) -> Optional[str]:
     else:
         trans_sub = f"{len(systems)} 个系统 · 各自基线见图例"
     _draw_metric(ax, systems, "trans_count", BLUE,
-                 "交易笔数 trans_count", trans_sub, unit=" 笔",
+                 "交易笔数 trans_count", trans_sub,
                  ylim=(0, None))
 
     # succ_rate
@@ -180,10 +154,7 @@ def render_bpc_svg(bag: FeatureBag) -> Optional[str]:
                             f"最低 {s.succ_rate_min_pct:.2f}% @ {_hm(s.succ_rate_min_ts)}",
                   lambda s: s.succ_rate_baseline_pct - s.succ_rate_min_pct,
                   lambda s: f"最低 {s.succ_rate_min_pct:.2f}% @ {_hm(s.succ_rate_min_ts)}"),
-        unit="%", highlight="min",
-        worst_picker=lambda s: s.succ_rate_baseline_pct - s.succ_rate_min_pct,
-        gate=lambda s: (s.succ_rate_baseline_pct - s.succ_rate_min_pct) > 0.1,
-        annot_fmt="{v:.2f}", ylim=(0, 100),
+        ylim=(0, 100),
     )
 
     # duration
@@ -198,10 +169,7 @@ def render_bpc_svg(bag: FeatureBag) -> Optional[str]:
                   lambda s: s.duration_deviation_x,
                   lambda s: f"峰值 {s.duration_max_ms:.0f}ms @ {_hm(s.duration_max_ts)} · "
                             f"偏离 ×{s.duration_deviation_x:.1f}"),
-        unit="ms", highlight="max",
-        worst_picker=lambda s: s.duration_deviation_x,
-        gate=lambda s: s.duration_deviation_x >= 2,
-        annot_fmt="{v:.0f}", ylim=(0, None),
+        ylim=(0, None),
     )
 
     # rr_rate
@@ -214,10 +182,7 @@ def render_bpc_svg(bag: FeatureBag) -> Optional[str]:
                             f"最低 {s.rr_rate_min_pct:.2f}% @ {_hm(s.rr_rate_min_ts)}",
                   lambda s: s.rr_rate_baseline_pct - s.rr_rate_min_pct,
                   lambda s: f"最低 {s.rr_rate_min_pct:.2f}% @ {_hm(s.rr_rate_min_ts)}"),
-        unit="%", highlight="min",
-        worst_picker=lambda s: s.rr_rate_baseline_pct - s.rr_rate_min_pct,
-        gate=lambda s: (s.rr_rate_baseline_pct - s.rr_rate_min_pct) > 0.3,
-        annot_fmt="{v:.2f}", ylim=(0, 100),
+        ylim=(0, 100),
     )
 
     buf = StringIO()
