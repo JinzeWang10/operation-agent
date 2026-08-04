@@ -7,3 +7,6 @@ big_data_model/knowledge_pipeline/out/
 *.zip
 *.xlsx
 .gstack/
+
+# review 复核台本地 overlay(sqlite 桩,不入库)
+*.sqlite3
